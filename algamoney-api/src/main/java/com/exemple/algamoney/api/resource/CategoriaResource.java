@@ -19,14 +19,34 @@ public class CategoriaResource {
     @Autowired //Ache uma implementação de categoriaRepository e entregue aqui
     private CategoriaRepository categoriaRepository;
 
-
-    //USANDO GET
-
     /* Retorna apenas a lista do banco, estando cheia ou vazia - Status 200 OK. */
     @GetMapping
     public List<Categoria> listar() {
         return categoriaRepository.findAll();
     }
+
+    /* Para saber o código da categoria que ele criou, usando responseentity */
+    @PostMapping
+    public ResponseEntity<Categoria> criar(@RequestBody Categoria categoria, HttpServletResponse response) {
+        Categoria categoriaSalva = categoriaRepository.save(categoria);
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
+                .buildAndExpand(categoriaSalva.getCodigo()).toUri();
+        response.setHeader("Location", uri.toASCIIString());
+
+        return ResponseEntity.created(uri).body(categoriaSalva); //Passa URI e a categoria que foi salva
+    }
+
+    //Buscar a categoria e caso não exista, retornar 404
+    @GetMapping("/{codigo}")
+    public ResponseEntity<Categoria> buscarPeloCodigo(@PathVariable long codigo) {
+        Categoria categoria = categoriaRepository.findOne(codigo);
+        return categoria != null ? ResponseEntity.ok(categoria) : ResponseEntity.notFound().build();
+    }
+}
+
+
+/* --------------------------------USANDO GET------------------------------------*/
 
     /* Retorna uma mensagem 404, não encontrado. Porém não está correto.
     @GetMapping
@@ -44,18 +64,24 @@ public class CategoriaResource {
     }
      */
 
-    //USANDO POST
+     /*Busca a categoria pelo codigo
+    @GetMapping("/{codigo}")
+    public Categoria buscarPeloCodigo(@PathVariable long codigo) {
+        return categoriaRepository.findOne(codigo);
+    }*/
 
-    /* Insere no banco uma categoria via POST e retorna um 201 CREATEAD.
+    /* --------------------------------USANDO POST------------------------------------*/
+
+    /* Insere no banco uma categoria via POST e retorna um 201 CREATED.
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
+        @ResponseStatus(HttpStatus.CREATED)
     public void criar(@RequestBody Categoria categoria) {
         categoriaRepository.save(categoria);
     }
      */
 
-/* Através da classe ServletURI Builder, vai através da requisição atual que foi pra /categoria (via post),
-vai pegar o código e adicionar ele na URI, por fim, setar o HEADER LOCATION com essa URI
+    /* Através da classe ServletURI Builder, vai através da requisição atual que foi pra /categoria (via post),
+    vai pegar o código e adicionar ele na URI, por fim, setar o HEADER LOCATION com essa URI
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void criar(@RequestBody Categoria categoria, HttpServletResponse response) {
@@ -65,23 +91,5 @@ vai pegar o código e adicionar ele na URI, por fim, setar o HEADER LOCATION com
                 .buildAndExpand(categoriaSalva.getCodigo()).toUri();
         response.setHeader("Location", uri.toASCIIString());
     }
- */
-
-    /* Para saber o código da categoria que ele criou, usando responseentity */
-    @PostMapping
-    public ResponseEntity<Categoria> criar(@RequestBody Categoria categoria, HttpServletResponse response) {
-        Categoria categoriaSalva = categoriaRepository.save(categoria);
-
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
-                .buildAndExpand(categoriaSalva.getCodigo()).toUri();
-        response.setHeader("Location", uri.toASCIIString());
-
-        return ResponseEntity.created(uri).body(categoriaSalva); //Passa URI e a categoria que foi salva
-    }
-
-    @GetMapping("/{codigo}")
-    public Categoria buscarPeloCodigo(@PathVariable long codigo) {
-        return categoriaRepository.findOne(codigo);
-    }
-
-}
+    */
+    /* --------------------------------/////////------------------------------------*/
