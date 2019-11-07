@@ -1,16 +1,16 @@
 package com.exemple.algamoney.api.resource;
 
+import com.exemple.algamoney.api.event.RecursoCriadoEvent;
 import com.exemple.algamoney.api.model.Categoria;
 import com.exemple.algamoney.api.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -19,6 +19,9 @@ public class CategoriaResource {
 
     @Autowired //Ache uma implementação de categoriaRepository e entregue aqui
     private CategoriaRepository categoriaRepository;
+
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     /* Retorna apenas a lista do banco, estando cheia ou vazia - Status 200 OK. */
     @GetMapping
@@ -31,11 +34,9 @@ public class CategoriaResource {
     public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
         Categoria categoriaSalva = categoriaRepository.save(categoria);
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequestUri().path("/{codigo}")
-                .buildAndExpand(categoriaSalva.getCodigo()).toUri();
-        response.setHeader("Location", uri.toASCIIString());
+        publisher.publishEvent(new RecursoCriadoEvent(this, response, categoriaSalva.getCodigo()));
 
-        return ResponseEntity.created(uri).body(categoriaSalva); //Passa URI e a categoria que foi salva
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSalva); //Passa URI e a categoria que foi salva
     }
 
     //Buscar a categoria e caso não exista, retornar 404
@@ -71,7 +72,7 @@ public class CategoriaResource {
         return categoriaRepository.findOne(codigo);
     }*/
 
-    /* --------------------------------USANDO POST------------------------------------*/
+/* --------------------------------USANDO POST------------------------------------*/
 
     /* Insere no banco uma categoria via POST e retorna um 201 CREATED.
     @PostMapping
@@ -93,4 +94,4 @@ public class CategoriaResource {
         response.setHeader("Location", uri.toASCIIString());
     }
     */
-    /* --------------------------------/////////------------------------------------*/
+/* --------------------------------/////////------------------------------------*/

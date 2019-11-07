@@ -18,15 +18,21 @@ public class Pessoa {
     @Size(min = 10, max = 50)
     private String nome;
 
+    @NotNull
     private Boolean ativo;
 
     @Embedded
     private Endereco endereco;
 
+    /*
+
+    //Força a criação do ativo sempre como TRUE
+
     @PrePersist
     void onCreate(){
         this.ativo = Boolean.TRUE; //definir como TRUE durante a inserção no banco
     }
+     */
 
     public Long getCodigo() {
         return codigo;
