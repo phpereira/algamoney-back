@@ -1,5 +1,6 @@
-package com.exemple.algamoney.api.event;
+package com.exemple.algamoney.api.event.listener;
 
+import com.exemple.algamoney.api.event.RecursoCriadoEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
