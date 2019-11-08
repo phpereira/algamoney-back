@@ -22,6 +22,9 @@ public class PessoaResource {
     private PessoaRepository pessoaRepository;
 
     @Autowired
+    private ApplicationEventPublisher publisher;
+
+    @Autowired
     PessoaService pessoaService;
 
     @GetMapping
@@ -29,8 +32,11 @@ public class PessoaResource {
         return pessoaRepository.findAll();
     }
 
-    @Autowired
-    private ApplicationEventPublisher publisher;
+    @GetMapping("/{codigo}")
+    public ResponseEntity<Pessoa> buscarPeloCodigo(@PathVariable long codigo) {
+        Pessoa pessoa = pessoaRepository.findOne(codigo);
+        return pessoa != null ? ResponseEntity.ok(pessoa) : ResponseEntity.notFound().build();
+    }
 
     @PostMapping
     public ResponseEntity<Pessoa> criar(@Valid @RequestBody Pessoa pessoa, HttpServletResponse response) {
@@ -41,18 +47,6 @@ public class PessoaResource {
         return ResponseEntity.status(HttpStatus.CREATED).body(pessoaSalva);
     }
 
-    @GetMapping("/{codigo}")
-    public ResponseEntity<Pessoa> buscarPeloCodigo(@PathVariable long codigo) {
-        Pessoa pessoa = pessoaRepository.findOne(codigo);
-        return pessoa != null ? ResponseEntity.ok(pessoa) : ResponseEntity.notFound().build();
-    }
-
-    @DeleteMapping("/{codigo}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void remover(@PathVariable Long codigo) {
-        pessoaRepository.delete(codigo);
-
-    }
 
     @PutMapping("/{codigo}")
     public ResponseEntity<Pessoa> atualizar(@PathVariable Long codigo, @Valid @RequestBody Pessoa pessoa) {
@@ -66,5 +60,15 @@ public class PessoaResource {
         pessoaService.atualizarPropriedadeAtivo(codigo, ativo);
 
     }
+
+
+    @DeleteMapping("/{codigo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remover(@PathVariable Long codigo) {
+        pessoaRepository.delete(codigo);
+
+    }
+
+
 
 }

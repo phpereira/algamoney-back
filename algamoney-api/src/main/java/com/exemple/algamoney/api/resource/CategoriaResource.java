@@ -29,6 +29,13 @@ public class CategoriaResource {
         return categoriaRepository.findAll();
     }
 
+    //Buscar a categoria e caso não exista, retornar 404
+    @GetMapping("/{codigo}")
+    public ResponseEntity<Categoria> buscarPeloCodigo(@PathVariable long codigo) {
+        Categoria categoria = categoriaRepository.findOne(codigo);
+        return categoria != null ? ResponseEntity.ok(categoria) : ResponseEntity.notFound().build();
+    }
+
     /* Para saber o código da categoria que ele criou, usando responseentity */
     @PostMapping
     public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
@@ -39,12 +46,7 @@ public class CategoriaResource {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoriaSalva); //Passa URI e a categoria que foi salva
     }
 
-    //Buscar a categoria e caso não exista, retornar 404
-    @GetMapping("/{codigo}")
-    public ResponseEntity<Categoria> buscarPeloCodigo(@PathVariable long codigo) {
-        Categoria categoria = categoriaRepository.findOne(codigo);
-        return categoria != null ? ResponseEntity.ok(categoria) : ResponseEntity.notFound().build();
-    }
+
 }
 
 
