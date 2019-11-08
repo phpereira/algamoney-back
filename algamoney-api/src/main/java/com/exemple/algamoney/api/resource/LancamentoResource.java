@@ -4,6 +4,7 @@ package com.exemple.algamoney.api.resource;
 import com.exemple.algamoney.api.event.RecursoCriadoEvent;
 import com.exemple.algamoney.api.model.Lancamento;
 import com.exemple.algamoney.api.repository.LancamentoRepository;
+import com.exemple.algamoney.api.repository.filter.LancamentoFilter;
 import com.exemple.algamoney.api.service.LancamentoService;
 import com.exemple.algamoney.api.service.exception.PessoaInexistenteOuInativaException;
 import com.exemple.algamoney.api.exceptionhandler.AlgamoneyExceptionHandler.Erro;
@@ -39,8 +40,8 @@ public class LancamentoResource {
     private MessageSource messageSource;
 
     @GetMapping
-    public List<Lancamento> listar() {
-        return lancamentoRepository.findAll();
+    public List<Lancamento> pesquisar(LancamentoFilter lancamentoFilter) {
+        return lancamentoRepository.filtrar(lancamentoFilter);
     }
 
     @GetMapping("/{codigo}")
