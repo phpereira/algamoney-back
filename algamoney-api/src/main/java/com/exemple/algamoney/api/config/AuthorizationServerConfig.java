@@ -1,5 +1,6 @@
 package com.exemple.algamoney.api.config;
 
+import com.exemple.algamoney.api.config.token.CustomTokenEnhancer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,9 +9,14 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+
+import java.util.Arrays;
+
 
 @Configuration
 @EnableAuthorizationServer
@@ -54,11 +60,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     //configuração de endpoint
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+        TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), accessTokenConverter()));
+
         endpoints
-                .tokenStore(tokenStore()) //onde está armazenado o token
-                .accessTokenConverter(accessTokenConverter())
-                .reuseRefreshTokens(false) //sempre que pedir que um novo access token via refresh token, um novo refresh token será enviado, com o intuito dele não se deslogar.
-                .authenticationManager(authenticationManager); //quem vai validar o usuário e senha
+                .tokenStore(tokenStore())
+                .tokenEnhancer(tokenEnhancerChain)
+                .reuseRefreshTokens(false)
+                .authenticationManager(authenticationManager);
     }
 
     @Bean
@@ -71,10 +80,10 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Bean
     public TokenStore tokenStore() {
         return new JwtTokenStore(accessTokenConverter());
-
-
-        // return new InMemoryTokenStore(); //token armazenado em memomry
     }
 
-
+    @Bean
+    public TokenEnhancer tokenEnhancer() {
+        return new CustomTokenEnhancer();
+    }
 }
