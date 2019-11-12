@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,12 +26,14 @@ public class CategoriaResource {
 
     /* Retorna apenas a lista do banco, estando cheia ou vazia - Status 200 OK. */
     @GetMapping
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')")
     public List<Categoria> listar() {
         return categoriaRepository.findAll();
     }
 
     //Buscar a categoria e caso não exista, retornar 404
     @GetMapping("/{codigo}")
+    @PreAuthorize("hasAuthority('ROLE_PESQUISAR_CATEGORIA') and #oauth2.hasScope('read')")
     public ResponseEntity<Categoria> buscarPeloCodigo(@PathVariable long codigo) {
         Categoria categoria = categoriaRepository.findOne(codigo);
         return categoria != null ? ResponseEntity.ok(categoria) : ResponseEntity.notFound().build();
@@ -38,6 +41,7 @@ public class CategoriaResource {
 
     /* Para saber o código da categoria que ele criou, usando responseentity */
     @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_CATEGORIA') and #oauth2.hasScope('write')")
     public ResponseEntity<Categoria> criar(@Valid @RequestBody Categoria categoria, HttpServletResponse response) {
         Categoria categoriaSalva = categoriaRepository.save(categoria);
 
