@@ -4,6 +4,7 @@ package com.exemple.algamoney.api.resource;
 import com.exemple.algamoney.api.event.RecursoCriadoEvent;
 import com.exemple.algamoney.api.exceptionhandler.AlgamoneyExceptionHandler.Erro;
 import com.exemple.algamoney.api.model.Lancamento;
+import com.exemple.algamoney.api.model.Pessoa;
 import com.exemple.algamoney.api.repository.LancamentoRepository;
 import com.exemple.algamoney.api.repository.filter.LancamentoFilter;
 import com.exemple.algamoney.api.repository.projection.ResumoLancamento;
@@ -78,6 +79,17 @@ public class LancamentoResource {
     public void remover(@PathVariable Long codigo) {
         lancamentoRepository.delete(codigo);
 
+    }
+
+    @PutMapping("/{codigo}")
+    @PreAuthorize("hasAuthority('ROLE_CADASTRAR_LANCAMENTO') and #oauth2.hasScope('write')")
+    public ResponseEntity<Lancamento> atualizar(@PathVariable Long codigo, @Valid @RequestBody Lancamento lancamento) {
+        try {
+            Lancamento lancamentoSalvo = lancamentoService.atualizar(codigo, lancamento);
+            return ResponseEntity.ok(lancamentoSalvo);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @ExceptionHandler({PessoaInexistenteOuInativaException.class})

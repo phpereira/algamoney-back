@@ -9,7 +9,7 @@ public class Endereco {
     private String numero;
     private String complemento;
     private String bairro;
-    private Integer cep;
+    private String cep;
     private String cidade;
     private String estado;
 
@@ -45,11 +45,11 @@ public class Endereco {
         this.bairro = bairro;
     }
 
-    public Integer getCep() {
+    public String getCep() {
         return cep;
     }
 
-    public void setCep(Integer cep) {
+    public void setCep(String cep) {
         this.cep = cep;
     }
 
