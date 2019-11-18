@@ -1,6 +1,6 @@
 package com.exemple.algamoney.api;
 
-import com.exemple.algamoney.api.config.property.AlgamoneyApiProperty;
+import com.exemple.algamoney.api.comum.AlgamoneyApiProperty;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
