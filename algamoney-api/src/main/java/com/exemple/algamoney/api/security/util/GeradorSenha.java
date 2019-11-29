@@ -1,4 +1,4 @@
-/*package com.exemple.algamoney.api.security.util;
+package com.exemple.algamoney.api.security.util;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -9,4 +9,4 @@ public class GeradorSenha {
         System.out.println(encoder.encode("admin"));
 
     }
-} */
+}
